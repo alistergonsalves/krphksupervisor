@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Room, RoomStatus, MissingItem, PRESET_ITEMS, STATUS_CONFIG, JobOrder } from '@/types/housekeeping';
+import { Room, RoomStatus, MissingItem, STATUS_CONFIG, JobOrder } from '@/types/housekeeping';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -16,7 +16,10 @@ interface Props {
   open: boolean;
   onClose: () => void;
   onUpdate: (roomId: string, updates: Partial<Room>) => void;
+  presetItems: string[];
 }
+
+export function RoomInspectionModal({ room, open, onClose, onUpdate, presetItems }: Props) {
 
 export function RoomInspectionModal({ room, open, onClose, onUpdate }: Props) {
   const [missingItems, setMissingItems] = useState<MissingItem[]>([]);
