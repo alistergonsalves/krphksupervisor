@@ -59,6 +59,7 @@ export default {
           blocked: "hsl(var(--room-blocked))",
           priority: "hsl(var(--room-priority))",
           dnd: "hsl(var(--room-dnd))",
+          serviceRefused: "hsl(var(--room-serviceRefused))",
         },
         sidebar: {
           DEFAULT: "hsl(var(--sidebar-background))",
