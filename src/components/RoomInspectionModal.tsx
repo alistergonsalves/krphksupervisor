@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Room, RoomStatus, MissingItem, PRESET_ITEMS, STATUS_CONFIG, JobOrder } from '@/types/housekeeping';
+import { Room, RoomStatus, MissingItem, STATUS_CONFIG, JobOrder } from '@/types/housekeeping';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -16,9 +16,10 @@ interface Props {
   open: boolean;
   onClose: () => void;
   onUpdate: (roomId: string, updates: Partial<Room>) => void;
+  presetItems: string[];
 }
 
-export function RoomInspectionModal({ room, open, onClose, onUpdate }: Props) {
+export function RoomInspectionModal({ room, open, onClose, onUpdate, presetItems }: Props) {
   const [missingItems, setMissingItems] = useState<MissingItem[]>([]);
   const [jobOrders, setJobOrders] = useState<JobOrder[]>([]);
   const [status, setStatus] = useState<RoomStatus>('vacant');
@@ -205,7 +206,7 @@ export function RoomInspectionModal({ room, open, onClose, onUpdate }: Props) {
 
               {/* Preset items grid */}
               <div className="flex flex-wrap gap-1.5 max-h-40 overflow-y-auto p-2 rounded-lg bg-secondary/50">
-                {PRESET_ITEMS.map(item => (
+                {presetItems.map(item => (
                   <button
                     key={item}
                     onClick={() => toggleItem(item)}

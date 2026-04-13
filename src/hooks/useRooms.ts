@@ -3,22 +3,16 @@ import { Room, RoomStatus } from '@/types/housekeeping';
 
 const STORAGE_KEY = 'housekeeping-rooms';
 
-function generateRooms(): Room[] {
+function generateDefaultRooms(): Room[] {
   const rooms: Room[] = [];
-  const statuses: RoomStatus[] = ['vacant', 'occupied', 'dirty', 'departure', 'blocked'];
   for (let floor = 1; floor <= 4; floor++) {
     for (let r = 1; r <= 10; r++) {
       const num = `${floor}${String(r).padStart(2, '0')}`;
-      const statusIndex = Math.floor(Math.random() * 5);
       rooms.push({
-        id: num,
-        number: num,
-        floor,
-        status: statuses[statusIndex],
-        isPriority: Math.random() < 0.1,
-        isDND: Math.random() < 0.08,
-        missingItems: [],
-        jobOrders: [],
+        id: num, number: num, floor,
+        status: 'vacant',
+        isPriority: false, isDND: false,
+        missingItems: [], jobOrders: [],
       });
     }
   }
@@ -37,7 +31,7 @@ function loadRooms(): Room[] {
       }));
     }
   } catch { /* ignore */ }
-  return generateRooms();
+  return generateDefaultRooms();
 }
 
 export function useRooms() {
@@ -51,10 +45,25 @@ export function useRooms() {
     setRooms(prev => prev.map(r => r.id === roomId ? { ...r, ...updates } : r));
   };
 
-  const resetRooms = () => {
-    const fresh = generateRooms();
-    setRooms(fresh);
+  const addRoom = (number: string, floor: number) => {
+    const newRoom: Room = {
+      id: `${number}-${Date.now()}`, number, floor,
+      status: 'vacant', isPriority: false, isDND: false,
+      missingItems: [], jobOrders: [],
+    };
+    setRooms(prev => [...prev, newRoom].sort((a, b) => a.number.localeCompare(b.number, undefined, { numeric: true })));
   };
+
+  const removeRoom = (roomId: string) => {
+    setRooms(prev => prev.filter(r => r.id !== roomId));
+  };
+
+  const editRoomNumber = (roomId: string, newNumber: string, newFloor: number) => {
+    setRooms(prev => prev.map(r => r.id === roomId ? { ...r, number: newNumber, floor: newFloor } : r)
+      .sort((a, b) => a.number.localeCompare(b.number, undefined, { numeric: true })));
+  };
+
+  const resetRooms = () => setRooms(generateDefaultRooms());
 
   const stats = {
     vacant: rooms.filter(r => r.status === 'vacant').length,
@@ -67,5 +76,5 @@ export function useRooms() {
     total: rooms.length,
   };
 
-  return { rooms, updateRoom, resetRooms, stats };
+  return { rooms, updateRoom, addRoom, removeRoom, editRoomNumber, resetRooms, stats };
 }
