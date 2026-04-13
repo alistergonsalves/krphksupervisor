@@ -20,8 +20,6 @@ interface Props {
 }
 
 export function RoomInspectionModal({ room, open, onClose, onUpdate, presetItems }: Props) {
-
-export function RoomInspectionModal({ room, open, onClose, onUpdate }: Props) {
   const [missingItems, setMissingItems] = useState<MissingItem[]>([]);
   const [jobOrders, setJobOrders] = useState<JobOrder[]>([]);
   const [status, setStatus] = useState<RoomStatus>('vacant');
