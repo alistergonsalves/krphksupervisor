@@ -206,7 +206,7 @@ export function RoomInspectionModal({ room, open, onClose, onUpdate, presetItems
 
               {/* Preset items grid */}
               <div className="flex flex-wrap gap-1.5 max-h-40 overflow-y-auto p-2 rounded-lg bg-secondary/50">
-                {PRESET_ITEMS.map(item => (
+                {presetItems.map(item => (
                   <button
                     key={item}
                     onClick={() => toggleItem(item)}
