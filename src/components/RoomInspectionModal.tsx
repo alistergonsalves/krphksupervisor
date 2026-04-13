@@ -51,6 +51,7 @@ export function RoomInspectionModal({ room, open, onClose, onUpdate }: Props) {
   }
 
   if (!room) return null;
+  const statusConfig = STATUS_CONFIG[status];
 
   const toggleItem = (item: string) => {
     setSelectedItems(prev => prev.includes(item) ? prev.filter(i => i !== item) : [...prev, item]);
@@ -112,8 +113,7 @@ export function RoomInspectionModal({ room, open, onClose, onUpdate }: Props) {
     onClose();
   };
 
-  const statusConfig = STATUS_CONFIG[status];
-  // removed unused state
+  // statusConfig moved above
 
   return (
     <Dialog open={open} onOpenChange={() => onClose()}>
