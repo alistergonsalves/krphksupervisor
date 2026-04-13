@@ -113,7 +113,7 @@ export function RoomInspectionModal({ room, open, onClose, onUpdate }: Props) {
   };
 
   const statusConfig = STATUS_CONFIG[status];
-  const itemSearch = useState('');
+  // removed unused state
 
   return (
     <Dialog open={open} onOpenChange={() => onClose()}>
