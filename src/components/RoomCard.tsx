@@ -1,5 +1,5 @@
 import { Room, STATUS_CONFIG } from '@/types/housekeeping';
-import { AlertTriangle, BellOff, Wrench } from 'lucide-react';
+import { AlertTriangle, BellOff, Wrench, Ban } from 'lucide-react';
 
 interface RoomCardProps {
   room: Room;
@@ -25,6 +25,11 @@ export function RoomCard({ room, onClick }: RoomCardProps) {
         {room.isDND && (
           <span className="bg-room-dnd rounded-full p-1" title="DND">
             <BellOff className="h-3 w-3 text-primary-foreground" />
+          </span>
+        )}
+        {room.isServiceRefused && (
+          <span className="bg-room-serviceRefused rounded-full p-1" title="Service Refused">
+            <Ban className="h-3 w-3 text-primary-foreground" />
           </span>
         )}
         {hasJobOrders && (

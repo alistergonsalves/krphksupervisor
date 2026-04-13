@@ -16,10 +16,11 @@ export interface JobOrder {
 export interface Room {
   id: string;
   number: string;
-  floor: number;
+  floor: number; // internally still "floor" but displayed as "Block"
   status: RoomStatus;
   isPriority: boolean;
   isDND: boolean;
+  isServiceRefused: boolean;
   missingItems: MissingItem[];
   jobOrders: JobOrder[];
   lastInspected?: Date;

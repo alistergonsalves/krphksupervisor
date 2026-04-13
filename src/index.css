@@ -44,6 +44,7 @@
     --room-blocked: 271 60% 50%;
     --room-priority: 25 95% 53%;
     --room-dnd: 0 0% 35%;
+    --room-serviceRefused: 340 65% 47%;
 
     /* Surfaces */
     --surface-elevated: 0 0% 100%;

@@ -1,10 +1,10 @@
 import { STATUS_CONFIG, RoomStatus } from '@/types/housekeeping';
-import { AlertTriangle, BellOff } from 'lucide-react';
+import { AlertTriangle, BellOff, Ban } from 'lucide-react';
 
 interface StatusBarProps {
   stats: Record<string, number>;
-  activeFilter: RoomStatus | 'all' | 'priority' | 'dnd';
-  onFilterChange: (filter: RoomStatus | 'all' | 'priority' | 'dnd') => void;
+  activeFilter: RoomStatus | 'all' | 'priority' | 'dnd' | 'serviceRefused';
+  onFilterChange: (filter: RoomStatus | 'all' | 'priority' | 'dnd' | 'serviceRefused') => void;
 }
 
 export function StatusBar({ stats, activeFilter, onFilterChange }: StatusBarProps) {
@@ -18,6 +18,7 @@ export function StatusBar({ stats, activeFilter, onFilterChange }: StatusBarProp
     })),
     { key: 'priority', label: 'Priority', count: stats.priority, className: 'bg-room-priority text-primary-foreground' },
     { key: 'dnd', label: 'DND', count: stats.dnd, className: 'bg-room-dnd text-primary-foreground' },
+    { key: 'serviceRefused', label: 'Service Refused', count: stats.serviceRefused, className: 'bg-room-serviceRefused text-primary-foreground' },
   ];
 
   return (
@@ -34,6 +35,7 @@ export function StatusBar({ stats, activeFilter, onFilterChange }: StatusBarProp
         >
           {item.key === 'priority' && <AlertTriangle className="h-3.5 w-3.5" />}
           {item.key === 'dnd' && <BellOff className="h-3.5 w-3.5" />}
+          {item.key === 'serviceRefused' && <Ban className="h-3.5 w-3.5" />}
           <span>{item.label}</span>
           <span className={`rounded-full px-2 py-0.5 text-xs font-bold ${
             activeFilter === item.key ? 'bg-background/20' : 'bg-secondary'
