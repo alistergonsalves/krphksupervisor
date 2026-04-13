@@ -13,6 +13,10 @@ export default {
       },
     },
     extend: {
+      fontFamily: {
+        sans: ['Inter', 'system-ui', 'sans-serif'],
+        display: ['Playfair Display', 'serif'],
+      },
       colors: {
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
@@ -46,6 +50,15 @@ export default {
         card: {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
+        },
+        room: {
+          vacant: "hsl(var(--room-vacant))",
+          occupied: "hsl(var(--room-occupied))",
+          dirty: "hsl(var(--room-dirty))",
+          departure: "hsl(var(--room-departure))",
+          blocked: "hsl(var(--room-blocked))",
+          priority: "hsl(var(--room-priority))",
+          dnd: "hsl(var(--room-dnd))",
         },
         sidebar: {
           DEFAULT: "hsl(var(--sidebar-background))",
