@@ -6,11 +6,15 @@ const SETTINGS_KEY = 'housekeeping-settings';
 export interface HotelSettings {
   hotelName: string;
   presetItems: string[];
+  logoUrl: string;
+  staffNames: string[];
 }
 
 const DEFAULT_SETTINGS: HotelSettings = {
   hotelName: 'Housekeeping Dashboard',
   presetItems: [...PRESET_ITEMS],
+  logoUrl: '',
+  staffNames: [],
 };
 
 function loadSettings(): HotelSettings {

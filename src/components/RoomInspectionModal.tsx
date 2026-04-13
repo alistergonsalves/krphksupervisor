@@ -9,7 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Textarea } from '@/components/ui/textarea';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
-import { AlertTriangle, BellOff, Check, Plus, Trash2, Wrench, X } from 'lucide-react';
+import { AlertTriangle, BellOff, Ban, Check, Plus, Trash2, Wrench, X } from 'lucide-react';
 
 interface Props {
   room: Room | null;
@@ -25,18 +25,16 @@ export function RoomInspectionModal({ room, open, onClose, onUpdate, presetItems
   const [status, setStatus] = useState<RoomStatus>('vacant');
   const [isPriority, setIsPriority] = useState(false);
   const [isDND, setIsDND] = useState(false);
+  const [isServiceRefused, setIsServiceRefused] = useState(false);
   const [notes, setNotes] = useState('');
 
-  // Item adding state
   const [selectedItems, setSelectedItems] = useState<string[]>([]);
   const [customItem, setCustomItem] = useState('');
   const [itemQuantity, setItemQuantity] = useState(1);
   const [itemType, setItemType] = useState<'missing' | 'damaged'>('missing');
 
-  // Job order state
   const [jobDescription, setJobDescription] = useState('');
 
-  // Sync state when room changes
   const [prevRoomId, setPrevRoomId] = useState<string | null>(null);
   if (room && room.id !== prevRoomId) {
     setPrevRoomId(room.id);
@@ -45,6 +43,7 @@ export function RoomInspectionModal({ room, open, onClose, onUpdate, presetItems
     setStatus(room.status);
     setIsPriority(room.isPriority);
     setIsDND(room.isDND);
+    setIsServiceRefused(room.isServiceRefused);
     setNotes(room.notes || '');
     setSelectedItems([]);
     setCustomItem('');
@@ -62,12 +61,7 @@ export function RoomInspectionModal({ room, open, onClose, onUpdate, presetItems
     const names = [...selectedItems];
     if (customItem.trim()) names.push(customItem.trim());
     if (names.length === 0) return;
-
-    const newItems: MissingItem[] = names.map(name => ({
-      name,
-      quantity: itemQuantity,
-      type: itemType,
-    }));
+    const newItems: MissingItem[] = names.map(name => ({ name, quantity: itemQuantity, type: itemType }));
     setMissingItems(prev => [...prev, ...newItems]);
     setSelectedItems([]);
     setCustomItem('');
@@ -80,41 +74,22 @@ export function RoomInspectionModal({ room, open, onClose, onUpdate, presetItems
 
   const addJobOrder = () => {
     if (!jobDescription.trim()) return;
-    const jo: JobOrder = {
-      id: Date.now().toString(),
-      description: jobDescription.trim(),
-      createdAt: new Date(),
-      completed: false,
-    };
+    const jo: JobOrder = { id: Date.now().toString(), description: jobDescription.trim(), createdAt: new Date(), completed: false };
     setJobOrders(prev => [...prev, jo]);
     setJobDescription('');
-    // Auto-block room when job order is created
     setStatus('blocked');
   };
 
   const completeJobOrder = (id: string) => {
     const updated = jobOrders.map(j => j.id === id ? { ...j, completed: true } : j);
     setJobOrders(updated);
-    // If all job orders completed, release room to vacant
-    if (updated.every(j => j.completed)) {
-      setStatus('vacant');
-    }
+    if (updated.every(j => j.completed)) setStatus('vacant');
   };
 
   const handleSave = () => {
-    onUpdate(room.id, {
-      status,
-      isPriority,
-      isDND,
-      missingItems,
-      jobOrders,
-      notes,
-      lastInspected: new Date(),
-    });
+    onUpdate(room.id, { status, isPriority, isDND, isServiceRefused, missingItems, jobOrders, notes, lastInspected: new Date() });
     onClose();
   };
-
-  // statusConfig moved above
 
   return (
     <Dialog open={open} onOpenChange={() => onClose()}>
@@ -126,7 +101,7 @@ export function RoomInspectionModal({ room, open, onClose, onUpdate, presetItems
             </span>
             <div>
               <div>Room {room.number}</div>
-              <div className="text-sm font-sans font-normal text-muted-foreground">Floor {room.floor}</div>
+              <div className="text-sm font-sans font-normal text-muted-foreground">Block {room.floor}</div>
             </div>
           </DialogTitle>
         </DialogHeader>
@@ -138,14 +113,11 @@ export function RoomInspectionModal({ room, open, onClose, onUpdate, presetItems
             <TabsTrigger value="jobs">Job Orders ({jobOrders.filter(j => !j.completed).length})</TabsTrigger>
           </TabsList>
 
-          {/* STATUS TAB */}
           <TabsContent value="status" className="space-y-4 mt-4">
             <div className="space-y-2">
               <Label>Room Status</Label>
               <Select value={status} onValueChange={(v) => setStatus(v as RoomStatus)}>
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
+                <SelectTrigger><SelectValue /></SelectTrigger>
                 <SelectContent>
                   {Object.entries(STATUS_CONFIG).map(([key, val]) => (
                     <SelectItem key={key} value={key}>{val.label}</SelectItem>
@@ -154,7 +126,7 @@ export function RoomInspectionModal({ room, open, onClose, onUpdate, presetItems
               </Select>
             </div>
 
-            <div className="flex gap-6">
+            <div className="flex flex-wrap gap-4">
               <div className="flex items-center gap-2">
                 <Switch checked={isPriority} onCheckedChange={setIsPriority} />
                 <Label className="flex items-center gap-1.5">
@@ -167,6 +139,12 @@ export function RoomInspectionModal({ room, open, onClose, onUpdate, presetItems
                   <BellOff className="h-4 w-4 text-room-dnd" /> Do Not Disturb
                 </Label>
               </div>
+              <div className="flex items-center gap-2">
+                <Switch checked={isServiceRefused} onCheckedChange={setIsServiceRefused} />
+                <Label className="flex items-center gap-1.5">
+                  <Ban className="h-4 w-4 text-room-serviceRefused" /> Service Refused
+                </Label>
+              </div>
             </div>
 
             <div className="space-y-2">
@@ -175,120 +153,69 @@ export function RoomInspectionModal({ room, open, onClose, onUpdate, presetItems
             </div>
 
             {room.lastInspected && (
-              <p className="text-xs text-muted-foreground">
-                Last inspected: {room.lastInspected.toLocaleString()}
-              </p>
+              <p className="text-xs text-muted-foreground">Last inspected: {room.lastInspected.toLocaleString()}</p>
             )}
           </TabsContent>
 
-          {/* ITEMS TAB */}
           <TabsContent value="items" className="space-y-4 mt-4">
             <div className="space-y-3">
               <div className="flex gap-2">
                 <Select value={itemType} onValueChange={(v) => setItemType(v as 'missing' | 'damaged')}>
-                  <SelectTrigger className="w-32">
-                    <SelectValue />
-                  </SelectTrigger>
+                  <SelectTrigger className="w-32"><SelectValue /></SelectTrigger>
                   <SelectContent>
                     <SelectItem value="missing">Missing</SelectItem>
                     <SelectItem value="damaged">Damaged</SelectItem>
                   </SelectContent>
                 </Select>
-                <Input
-                  type="number"
-                  min={1}
-                  value={itemQuantity}
-                  onChange={e => setItemQuantity(Number(e.target.value))}
-                  className="w-20"
-                  placeholder="Qty"
-                />
+                <Input type="number" min={1} value={itemQuantity} onChange={e => setItemQuantity(Number(e.target.value))} className="w-20" placeholder="Qty" />
               </div>
-
-              {/* Preset items grid */}
               <div className="flex flex-wrap gap-1.5 max-h-40 overflow-y-auto p-2 rounded-lg bg-secondary/50">
                 {presetItems.map(item => (
-                  <button
-                    key={item}
-                    onClick={() => toggleItem(item)}
-                    className={`rounded-md px-2 py-1 text-xs font-medium transition-colors ${
-                      selectedItems.includes(item)
-                        ? 'bg-primary text-primary-foreground'
-                        : 'bg-card text-foreground hover:bg-accent border border-border'
-                    }`}
-                  >
+                  <button key={item} onClick={() => toggleItem(item)}
+                    className={`rounded-md px-2 py-1 text-xs font-medium transition-colors ${selectedItems.includes(item) ? 'bg-primary text-primary-foreground' : 'bg-card text-foreground hover:bg-accent border border-border'}`}>
                     {item}
                   </button>
                 ))}
               </div>
-
-              {/* Custom item */}
               <div className="flex gap-2">
-                <Input
-                  value={customItem}
-                  onChange={e => setCustomItem(e.target.value)}
-                  placeholder="Add custom item..."
-                  className="flex-1"
-                />
+                <Input value={customItem} onChange={e => setCustomItem(e.target.value)} placeholder="Add custom item..." className="flex-1" />
                 <Button onClick={addItems} size="sm" disabled={selectedItems.length === 0 && !customItem.trim()}>
                   <Plus className="h-4 w-4 mr-1" /> Add
                 </Button>
               </div>
             </div>
-
-            {/* Listed items */}
             {missingItems.length > 0 && (
               <div className="space-y-1.5">
                 <Label>Noted Items</Label>
                 {missingItems.map((item, i) => (
                   <div key={i} className="flex items-center justify-between rounded-lg bg-secondary/50 px-3 py-2 text-sm">
                     <div className="flex items-center gap-2">
-                      <Badge variant={item.type === 'damaged' ? 'destructive' : 'secondary'} className="text-[10px]">
-                        {item.type}
-                      </Badge>
+                      <Badge variant={item.type === 'damaged' ? 'destructive' : 'secondary'} className="text-[10px]">{item.type}</Badge>
                       <span className="font-medium">{item.name}</span>
                       <span className="text-muted-foreground">×{item.quantity}</span>
                     </div>
-                    <button onClick={() => removeItem(i)} className="text-muted-foreground hover:text-destructive">
-                      <X className="h-4 w-4" />
-                    </button>
+                    <button onClick={() => removeItem(i)} className="text-muted-foreground hover:text-destructive"><X className="h-4 w-4" /></button>
                   </div>
                 ))}
               </div>
             )}
           </TabsContent>
 
-          {/* JOB ORDERS TAB */}
           <TabsContent value="jobs" className="space-y-4 mt-4">
             <div className="flex gap-2">
-              <Input
-                value={jobDescription}
-                onChange={e => setJobDescription(e.target.value)}
-                placeholder="Describe the issue (e.g., 'Broken bathroom mirror')..."
-                className="flex-1"
-              />
+              <Input value={jobDescription} onChange={e => setJobDescription(e.target.value)} placeholder="Describe the issue..." className="flex-1" />
               <Button onClick={addJobOrder} size="sm" disabled={!jobDescription.trim()}>
                 <Wrench className="h-4 w-4 mr-1" /> Create
               </Button>
             </div>
-            <p className="text-xs text-muted-foreground">
-              Creating a job order automatically blocks the room (purple). Completing all orders releases it.
-            </p>
-
+            <p className="text-xs text-muted-foreground">Creating a job order automatically blocks the room. Completing all orders releases it.</p>
             {jobOrders.length > 0 && (
               <div className="space-y-2">
                 {jobOrders.map(jo => (
-                  <div key={jo.id} className={`flex items-center justify-between rounded-lg px-3 py-2.5 text-sm ${
-                    jo.completed ? 'bg-room-vacant/10' : 'bg-room-blocked/10'
-                  }`}>
+                  <div key={jo.id} className={`flex items-center justify-between rounded-lg px-3 py-2.5 text-sm ${jo.completed ? 'bg-room-vacant/10' : 'bg-room-blocked/10'}`}>
                     <div className="flex items-center gap-2">
-                      {jo.completed ? (
-                        <Check className="h-4 w-4 text-room-vacant" />
-                      ) : (
-                        <Wrench className="h-4 w-4 text-room-blocked" />
-                      )}
-                      <span className={jo.completed ? 'line-through text-muted-foreground' : 'font-medium'}>
-                        {jo.description}
-                      </span>
+                      {jo.completed ? <Check className="h-4 w-4 text-room-vacant" /> : <Wrench className="h-4 w-4 text-room-blocked" />}
+                      <span className={jo.completed ? 'line-through text-muted-foreground' : 'font-medium'}>{jo.description}</span>
                     </div>
                     {!jo.completed && (
                       <Button size="sm" variant="outline" onClick={() => completeJobOrder(jo.id)}>

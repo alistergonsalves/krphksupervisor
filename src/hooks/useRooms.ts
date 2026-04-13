@@ -5,13 +5,13 @@ const STORAGE_KEY = 'housekeeping-rooms';
 
 function generateDefaultRooms(): Room[] {
   const rooms: Room[] = [];
-  for (let floor = 1; floor <= 4; floor++) {
+  for (let block = 1; block <= 4; block++) {
     for (let r = 1; r <= 10; r++) {
-      const num = `${floor}${String(r).padStart(2, '0')}`;
+      const num = `${block}${String(r).padStart(2, '0')}`;
       rooms.push({
-        id: num, number: num, floor,
+        id: num, number: num, floor: block,
         status: 'vacant',
-        isPriority: false, isDND: false,
+        isPriority: false, isDND: false, isServiceRefused: false,
         missingItems: [], jobOrders: [],
       });
     }
@@ -26,6 +26,7 @@ function loadRooms(): Room[] {
       const parsed = JSON.parse(stored) as Room[];
       return parsed.map(r => ({
         ...r,
+        isServiceRefused: r.isServiceRefused ?? false,
         lastInspected: r.lastInspected ? new Date(r.lastInspected) : undefined,
         jobOrders: r.jobOrders.map(j => ({ ...j, createdAt: new Date(j.createdAt) })),
       }));
@@ -48,7 +49,7 @@ export function useRooms() {
   const addRoom = (number: string, floor: number) => {
     const newRoom: Room = {
       id: `${number}-${Date.now()}`, number, floor,
-      status: 'vacant', isPriority: false, isDND: false,
+      status: 'vacant', isPriority: false, isDND: false, isServiceRefused: false,
       missingItems: [], jobOrders: [],
     };
     setRooms(prev => [...prev, newRoom].sort((a, b) => a.number.localeCompare(b.number, undefined, { numeric: true })));
@@ -73,6 +74,7 @@ export function useRooms() {
     blocked: rooms.filter(r => r.status === 'blocked').length,
     priority: rooms.filter(r => r.isPriority).length,
     dnd: rooms.filter(r => r.isDND).length,
+    serviceRefused: rooms.filter(r => r.isServiceRefused).length,
     total: rooms.length,
   };
 
