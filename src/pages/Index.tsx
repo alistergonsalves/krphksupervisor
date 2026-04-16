@@ -6,9 +6,11 @@ import { RoomInspectionModal } from '@/components/RoomInspectionModal';
 import { SettingsModal } from '@/components/SettingsModal';
 import { useRooms } from '@/hooks/useRooms';
 import { useSettings } from '@/hooks/useSettings';
-import { Hotel, Calendar, Settings } from 'lucide-react';
+import { BulkActionBar } from '@/components/BulkActionBar';
+import { Hotel, Calendar, Settings, CheckSquare } from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Button } from '@/components/ui/button';
+
 
 type Filter = RoomStatus | 'all' | 'priority' | 'dnd' | 'serviceRefused' | 'sofaCumBedDone';
 
@@ -19,6 +21,27 @@ const Index = () => {
   const [blockFilter, setBlockFilter] = useState<string>('all');
   const [selectedRoom, setSelectedRoom] = useState<Room | null>(null);
   const [settingsOpen, setSettingsOpen] = useState(false);
+  const [selectionMode, setSelectionMode] = useState(false);
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+
+  const toggleSelect = (room: Room) => {
+    setSelectedIds(prev => {
+      const next = new Set(prev);
+      if (next.has(room.id)) next.delete(room.id); else next.add(room.id);
+      return next;
+    });
+  };
+
+  const applyBulkStatus = (status: RoomStatus) => {
+    selectedIds.forEach(id => updateRoom(id, { status }));
+    setSelectedIds(new Set());
+    setSelectionMode(false);
+  };
+
+  const exitSelectionMode = () => {
+    setSelectionMode(false);
+    setSelectedIds(new Set());
+  };
 
   const filteredRooms = rooms.filter(r => {
     if (filter === 'priority') return r.isPriority;
@@ -68,6 +91,14 @@ const Index = () => {
                 ))}
               </SelectContent>
             </Select>
+            <Button
+              variant={selectionMode ? "default" : "outline"}
+              size="icon"
+              onClick={() => selectionMode ? exitSelectionMode() : setSelectionMode(true)}
+              title="Multi-select"
+            >
+              <CheckSquare className="h-4 w-4" />
+            </Button>
             <Button variant="outline" size="icon" onClick={() => setSettingsOpen(true)} title="Settings">
               <Settings className="h-4 w-4" />
             </Button>
@@ -88,9 +119,27 @@ const Index = () => {
       <main className="container mx-auto px-4 py-6 space-y-6">
         <StatusBar stats={stats} activeFilter={filter} onFilterChange={setFilter} />
 
+        {selectionMode && (
+          <BulkActionBar
+            selectedCount={selectedIds.size}
+            totalVisible={filteredRooms.length}
+            onSelectAll={() => setSelectedIds(new Set(filteredRooms.map(r => r.id)))}
+            onDeselectAll={() => setSelectedIds(new Set())}
+            onApplyStatus={applyBulkStatus}
+            onCancel={exitSelectionMode}
+          />
+        )}
+
         <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-8 xl:grid-cols-10 gap-3">
           {filteredRooms.map(room => (
-            <RoomCard key={room.id} room={room} onClick={setSelectedRoom} />
+            <RoomCard
+              key={room.id}
+              room={room}
+              onClick={setSelectedRoom}
+              selectionMode={selectionMode}
+              isSelected={selectedIds.has(room.id)}
+              onToggleSelect={toggleSelect}
+            />
           ))}
         </div>
 

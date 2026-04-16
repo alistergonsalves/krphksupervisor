@@ -4,16 +4,27 @@ import { AlertTriangle, BellOff, Wrench, Ban, Sofa } from 'lucide-react';
 interface RoomCardProps {
   room: Room;
   onClick: (room: Room) => void;
+  selectionMode?: boolean;
+  isSelected?: boolean;
+  onToggleSelect?: (room: Room) => void;
 }
 
-export function RoomCard({ room, onClick }: RoomCardProps) {
+export function RoomCard({ room, onClick, selectionMode, isSelected, onToggleSelect }: RoomCardProps) {
   const config = STATUS_CONFIG[room.status];
   const hasJobOrders = room.jobOrders.some(j => !j.completed);
 
+  const handleClick = () => {
+    if (selectionMode && onToggleSelect) {
+      onToggleSelect(room);
+    } else {
+      onClick(room);
+    }
+  };
+
   return (
     <button
-      onClick={() => onClick(room)}
-      className={`relative flex flex-col items-center justify-center rounded-xl p-4 min-h-[100px] transition-all hover:scale-105 hover:shadow-lg ${config.className} shadow-sm`}
+      onClick={handleClick}
+      className={`relative flex flex-col items-center justify-center rounded-xl p-4 min-h-[100px] transition-all hover:scale-105 hover:shadow-lg ${config.className} shadow-sm ${isSelected ? 'ring-2 ring-primary ring-offset-2 ring-offset-background' : ''}`}
     >
       {/* Flags */}
       <div className="absolute top-1.5 right-1.5 flex gap-1">
