@@ -6,9 +6,11 @@ import { RoomInspectionModal } from '@/components/RoomInspectionModal';
 import { SettingsModal } from '@/components/SettingsModal';
 import { useRooms } from '@/hooks/useRooms';
 import { useSettings } from '@/hooks/useSettings';
-import { Hotel, Calendar, Settings } from 'lucide-react';
+import { BulkActionBar } from '@/components/BulkActionBar';
+import { Hotel, Calendar, Settings, CheckSquare } from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Button } from '@/components/ui/button';
+import { RoomStatus } from '@/types/housekeeping';
 
 type Filter = RoomStatus | 'all' | 'priority' | 'dnd' | 'serviceRefused' | 'sofaCumBedDone';
 
