@@ -26,7 +26,7 @@ const Index = () => {
     if (filter === 'serviceRefused') return r.isServiceRefused;
     if (filter !== 'all') return r.status === filter;
     return true;
-  }).filter(r => blockFilter === 'all' || r.floor === Number(blockFilter));
+  }).filter(r => blockFilter === 'all' || r.floor === blockFilter);
 
   const today = new Date().toLocaleDateString('en-US', {
     weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
@@ -63,7 +63,7 @@ const Index = () => {
               <SelectContent>
                 <SelectItem value="all">All Blocks</SelectItem>
                 {blocks.map(b => (
-                  <SelectItem key={b} value={String(b)}>Block {b}</SelectItem>
+                  <SelectItem key={b} value={b}>Block {b}</SelectItem>
                 ))}
               </SelectContent>
             </Select>
