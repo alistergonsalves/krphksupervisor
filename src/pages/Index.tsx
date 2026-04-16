@@ -10,7 +10,7 @@ import { Hotel, Calendar, Settings } from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Button } from '@/components/ui/button';
 
-type Filter = RoomStatus | 'all' | 'priority' | 'dnd' | 'serviceRefused';
+type Filter = RoomStatus | 'all' | 'priority' | 'dnd' | 'serviceRefused' | 'sofaCumBedDone';
 
 const Index = () => {
   const { rooms, updateRoom, addRoom, removeRoom, editRoomNumber, resetRooms, stats } = useRooms();
@@ -24,6 +24,7 @@ const Index = () => {
     if (filter === 'priority') return r.isPriority;
     if (filter === 'dnd') return r.isDND;
     if (filter === 'serviceRefused') return r.isServiceRefused;
+    if (filter === 'sofaCumBedDone') return r.isSofaCumBedDone;
     if (filter !== 'all') return r.status === filter;
     return true;
   }).filter(r => blockFilter === 'all' || r.floor === blockFilter);

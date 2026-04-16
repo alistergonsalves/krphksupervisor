@@ -11,7 +11,7 @@ function generateDefaultRooms(): Room[] {
       rooms.push({
         id: num, number: num, floor: String(block),
         status: 'vacant',
-        isPriority: false, isDND: false, isServiceRefused: false,
+        isPriority: false, isDND: false, isServiceRefused: false, isSofaCumBedDone: false,
         missingItems: [], jobOrders: [],
       });
     }
@@ -27,6 +27,7 @@ function loadRooms(): Room[] {
       return parsed.map(r => ({
         ...r,
         isServiceRefused: r.isServiceRefused ?? false,
+        isSofaCumBedDone: r.isSofaCumBedDone ?? false,
         lastInspected: r.lastInspected ? new Date(r.lastInspected) : undefined,
         jobOrders: r.jobOrders.map(j => ({ ...j, createdAt: new Date(j.createdAt) })),
       }));
@@ -49,7 +50,7 @@ export function useRooms() {
   const addRoom = (number: string, floor: string) => {
     const newRoom: Room = {
       id: `${number}-${Date.now()}`, number, floor,
-      status: 'vacant', isPriority: false, isDND: false, isServiceRefused: false,
+      status: 'vacant', isPriority: false, isDND: false, isServiceRefused: false, isSofaCumBedDone: false,
       missingItems: [], jobOrders: [],
     };
     setRooms(prev => [...prev, newRoom].sort((a, b) => a.number.localeCompare(b.number, undefined, { numeric: true })));
@@ -75,6 +76,7 @@ export function useRooms() {
     priority: rooms.filter(r => r.isPriority).length,
     dnd: rooms.filter(r => r.isDND).length,
     serviceRefused: rooms.filter(r => r.isServiceRefused).length,
+    sofaCumBedDone: rooms.filter(r => r.isSofaCumBedDone).length,
     total: rooms.length,
   };
 
