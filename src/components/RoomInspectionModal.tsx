@@ -9,7 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Textarea } from '@/components/ui/textarea';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
-import { AlertTriangle, BellOff, Ban, Check, Plus, Trash2, Wrench, X } from 'lucide-react';
+import { AlertTriangle, BellOff, Ban, Check, Plus, Trash2, Wrench, X, Sofa } from 'lucide-react';
 
 interface Props {
   room: Room | null;
@@ -26,6 +26,7 @@ export function RoomInspectionModal({ room, open, onClose, onUpdate, presetItems
   const [isPriority, setIsPriority] = useState(false);
   const [isDND, setIsDND] = useState(false);
   const [isServiceRefused, setIsServiceRefused] = useState(false);
+  const [isSofaCumBedDone, setIsSofaCumBedDone] = useState(false);
   const [notes, setNotes] = useState('');
 
   const [selectedItems, setSelectedItems] = useState<string[]>([]);
@@ -44,6 +45,7 @@ export function RoomInspectionModal({ room, open, onClose, onUpdate, presetItems
     setIsPriority(room.isPriority);
     setIsDND(room.isDND);
     setIsServiceRefused(room.isServiceRefused);
+    setIsSofaCumBedDone(room.isSofaCumBedDone);
     setNotes(room.notes || '');
     setSelectedItems([]);
     setCustomItem('');
@@ -87,7 +89,7 @@ export function RoomInspectionModal({ room, open, onClose, onUpdate, presetItems
   };
 
   const handleSave = () => {
-    onUpdate(room.id, { status, isPriority, isDND, isServiceRefused, missingItems, jobOrders, notes, lastInspected: new Date() });
+    onUpdate(room.id, { status, isPriority, isDND, isServiceRefused, isSofaCumBedDone, missingItems, jobOrders, notes, lastInspected: new Date() });
     onClose();
   };
 
@@ -143,6 +145,12 @@ export function RoomInspectionModal({ room, open, onClose, onUpdate, presetItems
                 <Switch checked={isServiceRefused} onCheckedChange={setIsServiceRefused} />
                 <Label className="flex items-center gap-1.5">
                   <Ban className="h-4 w-4 text-room-serviceRefused" /> Service Refused
+                </Label>
+              </div>
+              <div className="flex items-center gap-2">
+                <Switch checked={isSofaCumBedDone} onCheckedChange={setIsSofaCumBedDone} />
+                <Label className="flex items-center gap-1.5">
+                  <Check className="h-4 w-4 text-room-sofaCumBed" /> Sofa Cum Bed Done
                 </Label>
               </div>
             </div>

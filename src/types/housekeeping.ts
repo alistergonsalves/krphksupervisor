@@ -21,6 +21,7 @@ export interface Room {
   isPriority: boolean;
   isDND: boolean;
   isServiceRefused: boolean;
+  isSofaCumBedDone: boolean;
   missingItems: MissingItem[];
   jobOrders: JobOrder[];
   lastInspected?: Date;

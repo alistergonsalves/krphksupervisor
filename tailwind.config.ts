@@ -60,6 +60,7 @@ export default {
           priority: "hsl(var(--room-priority))",
           dnd: "hsl(var(--room-dnd))",
           serviceRefused: "hsl(var(--room-serviceRefused))",
+          sofaCumBed: "hsl(var(--room-sofaCumBed))",
         },
         sidebar: {
           DEFAULT: "hsl(var(--sidebar-background))",
