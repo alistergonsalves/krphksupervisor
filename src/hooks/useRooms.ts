@@ -9,7 +9,7 @@ function generateDefaultRooms(): Room[] {
     for (let r = 1; r <= 10; r++) {
       const num = `${block}${String(r).padStart(2, '0')}`;
       rooms.push({
-        id: num, number: num, floor: block,
+        id: num, number: num, floor: String(block),
         status: 'vacant',
         isPriority: false, isDND: false, isServiceRefused: false,
         missingItems: [], jobOrders: [],
@@ -46,7 +46,7 @@ export function useRooms() {
     setRooms(prev => prev.map(r => r.id === roomId ? { ...r, ...updates } : r));
   };
 
-  const addRoom = (number: string, floor: number) => {
+  const addRoom = (number: string, floor: string) => {
     const newRoom: Room = {
       id: `${number}-${Date.now()}`, number, floor,
       status: 'vacant', isPriority: false, isDND: false, isServiceRefused: false,
@@ -59,7 +59,7 @@ export function useRooms() {
     setRooms(prev => prev.filter(r => r.id !== roomId));
   };
 
-  const editRoomNumber = (roomId: string, newNumber: string, newFloor: number) => {
+  const editRoomNumber = (roomId: string, newNumber: string, newFloor: string) => {
     setRooms(prev => prev.map(r => r.id === roomId ? { ...r, number: newNumber, floor: newFloor } : r)
       .sort((a, b) => a.number.localeCompare(b.number, undefined, { numeric: true })));
   };

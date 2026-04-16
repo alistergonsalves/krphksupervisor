@@ -16,7 +16,7 @@ export interface JobOrder {
 export interface Room {
   id: string;
   number: string;
-  floor: number; // internally still "floor" but displayed as "Block"
+  floor: string; // internally still "floor" but displayed as "Block"
   status: RoomStatus;
   isPriority: boolean;
   isDND: boolean;

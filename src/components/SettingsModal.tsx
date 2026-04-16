@@ -14,9 +14,9 @@ interface Props {
   settings: HotelSettings;
   onUpdateSettings: (updates: Partial<HotelSettings>) => void;
   rooms: Room[];
-  onAddRoom: (number: string, floor: number) => void;
+  onAddRoom: (number: string, floor: string) => void;
   onRemoveRoom: (roomId: string) => void;
-  onEditRoomNumber: (roomId: string, newNumber: string, newFloor: number) => void;
+  onEditRoomNumber: (roomId: string, newNumber: string, newFloor: string) => void;
   onResetRooms: () => void;
 }
 
@@ -73,8 +73,8 @@ export function SettingsModal({
 
   const handleAddRoom = () => {
     const num = newRoomNumber.trim();
-    const block = parseInt(newRoomBlock);
-    if (num && !isNaN(block) && block > 0) {
+    const block = newRoomBlock.trim();
+    if (num && block) {
       onAddRoom(num, block);
       setNewRoomNumber('');
       setNewRoomBlock('1');
@@ -84,12 +84,12 @@ export function SettingsModal({
   const startEditRoom = (room: Room) => {
     setEditingRoom(room.id);
     setEditNumber(room.number);
-    setEditBlock(String(room.floor));
+    setEditBlock(room.floor);
   };
 
   const saveEditRoom = () => {
-    if (editingRoom && editNumber.trim() && parseInt(editBlock) > 0) {
-      onEditRoomNumber(editingRoom, editNumber.trim(), parseInt(editBlock));
+    if (editingRoom && editNumber.trim() && editBlock.trim()) {
+      onEditRoomNumber(editingRoom, editNumber.trim(), editBlock.trim());
       setEditingRoom(null);
     }
   };
@@ -200,7 +200,7 @@ export function SettingsModal({
               </div>
               <div className="w-24 space-y-1">
                 <Label className="text-xs">Block</Label>
-                <Input type="number" min={1} value={newRoomBlock} onChange={e => setNewRoomBlock(e.target.value)} />
+                <Input value={newRoomBlock} onChange={e => setNewRoomBlock(e.target.value)} placeholder="e.g. A" />
               </div>
               <Button onClick={handleAddRoom} size="sm" disabled={!newRoomNumber.trim()}>
                 <Plus className="h-4 w-4 mr-1" /> Add
@@ -217,7 +217,7 @@ export function SettingsModal({
                         {editingRoom === room.id ? (
                           <div className="flex items-center gap-2 flex-1">
                             <Input value={editNumber} onChange={e => setEditNumber(e.target.value)} className="h-7 w-24 text-xs" />
-                            <Input type="number" min={1} value={editBlock} onChange={e => setEditBlock(e.target.value)} className="h-7 w-16 text-xs" />
+                            <Input value={editBlock} onChange={e => setEditBlock(e.target.value)} className="h-7 w-16 text-xs" />
                             <button onClick={saveEditRoom} className="text-room-vacant hover:opacity-70"><Check className="h-4 w-4" /></button>
                             <button onClick={() => setEditingRoom(null)} className="text-muted-foreground hover:opacity-70"><X className="h-4 w-4" /></button>
                           </div>
