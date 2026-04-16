@@ -21,6 +21,27 @@ const Index = () => {
   const [blockFilter, setBlockFilter] = useState<string>('all');
   const [selectedRoom, setSelectedRoom] = useState<Room | null>(null);
   const [settingsOpen, setSettingsOpen] = useState(false);
+  const [selectionMode, setSelectionMode] = useState(false);
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+
+  const toggleSelect = (room: Room) => {
+    setSelectedIds(prev => {
+      const next = new Set(prev);
+      if (next.has(room.id)) next.delete(room.id); else next.add(room.id);
+      return next;
+    });
+  };
+
+  const applyBulkStatus = (status: RoomStatus) => {
+    selectedIds.forEach(id => updateRoom(id, { status }));
+    setSelectedIds(new Set());
+    setSelectionMode(false);
+  };
+
+  const exitSelectionMode = () => {
+    setSelectionMode(false);
+    setSelectedIds(new Set());
+  };
 
   const filteredRooms = rooms.filter(r => {
     if (filter === 'priority') return r.isPriority;
