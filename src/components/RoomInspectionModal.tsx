@@ -177,7 +177,15 @@ export function RoomInspectionModal({ room, open, onClose, onUpdate, presetItems
                     <SelectItem value="damaged">Damaged</SelectItem>
                   </SelectContent>
                 </Select>
-                <Input type="number" min={1} value={itemQuantity} onChange={e => setItemQuantity(Number(e.target.value))} className="w-20" placeholder="Qty" />
+                <div className="flex items-center gap-1 rounded-md border border-input bg-background">
+                  <Button type="button" variant="ghost" size="icon" className="h-9 w-9 rounded-r-none" onClick={() => setItemQuantity(q => Math.max(1, q - 1))} disabled={itemQuantity <= 1}>
+                    <span className="text-lg font-semibold">−</span>
+                  </Button>
+                  <span className="w-8 text-center text-sm font-semibold tabular-nums">{itemQuantity}</span>
+                  <Button type="button" variant="ghost" size="icon" className="h-9 w-9 rounded-l-none" onClick={() => setItemQuantity(q => q + 1)}>
+                    <span className="text-lg font-semibold">+</span>
+                  </Button>
+                </div>
               </div>
               <Popover>
                 <PopoverTrigger asChild>
