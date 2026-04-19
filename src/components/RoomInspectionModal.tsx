@@ -9,7 +9,9 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Textarea } from '@/components/ui/textarea';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
-import { AlertTriangle, BellOff, Ban, Check, Plus, Trash2, Wrench, X, Sofa } from 'lucide-react';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from '@/components/ui/command';
+import { AlertTriangle, BellOff, Ban, Check, Plus, Trash2, Wrench, X, Sofa, ChevronsUpDown, Search } from 'lucide-react';
 
 interface Props {
   room: Room | null;
