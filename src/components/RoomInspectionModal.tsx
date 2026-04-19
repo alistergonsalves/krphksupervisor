@@ -179,14 +179,45 @@ export function RoomInspectionModal({ room, open, onClose, onUpdate, presetItems
                 </Select>
                 <Input type="number" min={1} value={itemQuantity} onChange={e => setItemQuantity(Number(e.target.value))} className="w-20" placeholder="Qty" />
               </div>
-              <div className="flex flex-wrap gap-1.5 max-h-40 overflow-y-auto p-2 rounded-lg bg-secondary/50">
-                {presetItems.map(item => (
-                  <button key={item} onClick={() => toggleItem(item)}
-                    className={`rounded-md px-2 py-1 text-xs font-medium transition-colors ${selectedItems.includes(item) ? 'bg-primary text-primary-foreground' : 'bg-card text-foreground hover:bg-accent border border-border'}`}>
-                    {item}
-                  </button>
-                ))}
-              </div>
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button variant="outline" role="combobox" className="w-full justify-between">
+                    <span className="flex items-center gap-2 text-muted-foreground">
+                      <Search className="h-4 w-4" />
+                      {selectedItems.length > 0 ? `${selectedItems.length} item${selectedItems.length > 1 ? 's' : ''} selected` : 'Search items...'}
+                    </span>
+                    <ChevronsUpDown className="h-4 w-4 opacity-50" />
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-[--radix-popover-trigger-width] p-0" align="start">
+                  <Command>
+                    <CommandInput placeholder="Type to search items..." />
+                    <CommandList>
+                      <CommandEmpty>No items found. Use the field below to add a custom item.</CommandEmpty>
+                      <CommandGroup>
+                        {presetItems.map(item => (
+                          <CommandItem key={item} value={item} onSelect={() => toggleItem(item)}>
+                            <Check className={`mr-2 h-4 w-4 ${selectedItems.includes(item) ? 'opacity-100' : 'opacity-0'}`} />
+                            {item}
+                          </CommandItem>
+                        ))}
+                      </CommandGroup>
+                    </CommandList>
+                  </Command>
+                </PopoverContent>
+              </Popover>
+              {selectedItems.length > 0 && (
+                <div className="flex flex-wrap gap-1.5">
+                  {selectedItems.map(item => (
+                    <Badge key={item} variant="secondary" className="gap-1 pr-1">
+                      {item}
+                      <button onClick={() => toggleItem(item)} className="rounded-full hover:bg-background/50 p-0.5">
+                        <X className="h-3 w-3" />
+                      </button>
+                    </Badge>
+                  ))}
+                </div>
+              )}
               <div className="flex gap-2">
                 <Input value={customItem} onChange={e => setCustomItem(e.target.value)} placeholder="Add custom item..." className="flex-1" />
                 <Button onClick={addItems} size="sm" disabled={selectedItems.length === 0 && !customItem.trim()}>
