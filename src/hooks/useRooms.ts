@@ -2,6 +2,11 @@ import { useState, useEffect } from 'react';
 import { Room, RoomStatus } from '@/types/housekeeping';
 
 const STORAGE_KEY = 'housekeeping-rooms';
+const ASSIGN_DATE_KEY = 'housekeeping-assign-date';
+
+function todayStr() {
+  return new Date().toISOString().slice(0, 10);
+}
 
 function generateDefaultRooms(): Room[] {
   const rooms: Room[] = [];
@@ -12,6 +17,7 @@ function generateDefaultRooms(): Room[] {
         id: num, number: num, floor: String(block),
         status: 'vacant',
         isPriority: false, isDND: false, isServiceRefused: false, isSofaCumBedDone: false,
+        assignedToMe: false,
         missingItems: [], jobOrders: [],
       });
     }
@@ -24,10 +30,14 @@ function loadRooms(): Room[] {
     const stored = localStorage.getItem(STORAGE_KEY);
     if (stored) {
       const parsed = JSON.parse(stored) as Room[];
+      // Auto-clear assignments if it's a new day
+      const lastDate = localStorage.getItem(ASSIGN_DATE_KEY);
+      const clearAssignments = lastDate !== todayStr();
       return parsed.map(r => ({
         ...r,
         isServiceRefused: r.isServiceRefused ?? false,
         isSofaCumBedDone: r.isSofaCumBedDone ?? false,
+        assignedToMe: clearAssignments ? false : (r.assignedToMe ?? false),
         lastInspected: r.lastInspected ? new Date(r.lastInspected) : undefined,
         jobOrders: r.jobOrders.map(j => ({ ...j, createdAt: new Date(j.createdAt) })),
       }));
@@ -41,6 +51,7 @@ export function useRooms() {
 
   useEffect(() => {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(rooms));
+    localStorage.setItem(ASSIGN_DATE_KEY, todayStr());
   }, [rooms]);
 
   const updateRoom = (roomId: string, updates: Partial<Room>) => {
@@ -51,6 +62,7 @@ export function useRooms() {
     const newRoom: Room = {
       id: `${number}-${Date.now()}`, number, floor,
       status: 'vacant', isPriority: false, isDND: false, isServiceRefused: false, isSofaCumBedDone: false,
+      assignedToMe: false,
       missingItems: [], jobOrders: [],
     };
     setRooms(prev => [...prev, newRoom].sort((a, b) => a.number.localeCompare(b.number, undefined, { numeric: true })));
@@ -67,6 +79,10 @@ export function useRooms() {
 
   const resetRooms = () => setRooms(generateDefaultRooms());
 
+  const clearMyAssignments = () => {
+    setRooms(prev => prev.map(r => ({ ...r, assignedToMe: false })));
+  };
+
   const stats = {
     vacant: rooms.filter(r => r.status === 'vacant').length,
     occupied: rooms.filter(r => r.status === 'occupied').length,
@@ -77,8 +93,10 @@ export function useRooms() {
     dnd: rooms.filter(r => r.isDND).length,
     serviceRefused: rooms.filter(r => r.isServiceRefused).length,
     sofaCumBedDone: rooms.filter(r => r.isSofaCumBedDone).length,
+    assignedToMe: rooms.filter(r => r.assignedToMe).length,
     total: rooms.length,
   };
 
-  return { rooms, updateRoom, addRoom, removeRoom, editRoomNumber, resetRooms, stats };
+  return { rooms, updateRoom, addRoom, removeRoom, editRoomNumber, resetRooms, clearMyAssignments, stats };
 }
+
