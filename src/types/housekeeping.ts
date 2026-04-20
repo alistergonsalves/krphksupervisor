@@ -22,6 +22,7 @@ export interface Room {
   isDND: boolean;
   isServiceRefused: boolean;
   isSofaCumBedDone: boolean;
+  assignedToMe?: boolean;
   missingItems: MissingItem[];
   jobOrders: JobOrder[];
   lastInspected?: Date;
