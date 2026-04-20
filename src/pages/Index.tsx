@@ -7,24 +7,29 @@ import { SettingsModal } from '@/components/SettingsModal';
 import { useRooms } from '@/hooks/useRooms';
 import { useSettings } from '@/hooks/useSettings';
 import { BulkActionBar } from '@/components/BulkActionBar';
-import { Hotel, Calendar, Settings, CheckSquare } from 'lucide-react';
+import { Hotel, Calendar, Settings, CheckSquare, UserPlus, X } from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Button } from '@/components/ui/button';
 
 
-type Filter = RoomStatus | 'all' | 'priority' | 'dnd' | 'serviceRefused' | 'sofaCumBedDone';
+type Filter = RoomStatus | 'all' | 'priority' | 'dnd' | 'serviceRefused' | 'sofaCumBedDone' | 'assignedToMe';
 
 const Index = () => {
-  const { rooms, updateRoom, addRoom, removeRoom, editRoomNumber, resetRooms, stats } = useRooms();
+  const { rooms, updateRoom, addRoom, removeRoom, editRoomNumber, resetRooms, clearMyAssignments, stats } = useRooms();
   const { settings, updateSettings } = useSettings();
   const [filter, setFilter] = useState<Filter>('all');
   const [blockFilter, setBlockFilter] = useState<string>('all');
   const [selectedRoom, setSelectedRoom] = useState<Room | null>(null);
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [selectionMode, setSelectionMode] = useState(false);
+  const [assignMode, setAssignMode] = useState(false);
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
 
   const toggleSelect = (room: Room) => {
+    if (assignMode) {
+      updateRoom(room.id, { assignedToMe: !room.assignedToMe });
+      return;
+    }
     setSelectedIds(prev => {
       const next = new Set(prev);
       if (next.has(room.id)) next.delete(room.id); else next.add(room.id);
@@ -43,14 +48,28 @@ const Index = () => {
     setSelectedIds(new Set());
   };
 
+  const enterSelectionMode = () => {
+    setAssignMode(false);
+    setSelectionMode(true);
+  };
+
+  const enterAssignMode = () => {
+    setSelectionMode(false);
+    setSelectedIds(new Set());
+    setAssignMode(true);
+  };
+
   const filteredRooms = rooms.filter(r => {
     if (filter === 'priority') return r.isPriority;
     if (filter === 'dnd') return r.isDND;
     if (filter === 'serviceRefused') return r.isServiceRefused;
     if (filter === 'sofaCumBedDone') return r.isSofaCumBedDone;
+    if (filter === 'assignedToMe') return r.assignedToMe;
     if (filter !== 'all') return r.status === filter;
     return true;
   }).filter(r => blockFilter === 'all' || r.floor === blockFilter);
+
+  const myRooms = rooms.filter(r => r.assignedToMe);
 
   const today = new Date().toLocaleDateString('en-US', {
     weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
@@ -92,9 +111,17 @@ const Index = () => {
               </SelectContent>
             </Select>
             <Button
+              variant={assignMode ? "default" : "outline"}
+              size="icon"
+              onClick={() => assignMode ? setAssignMode(false) : enterAssignMode()}
+              title="Assign rooms to me"
+            >
+              <UserPlus className="h-4 w-4" />
+            </Button>
+            <Button
               variant={selectionMode ? "default" : "outline"}
               size="icon"
-              onClick={() => selectionMode ? exitSelectionMode() : setSelectionMode(true)}
+              onClick={() => selectionMode ? exitSelectionMode() : enterSelectionMode()}
               title="Multi-select"
             >
               <CheckSquare className="h-4 w-4" />
@@ -119,6 +146,18 @@ const Index = () => {
       <main className="container mx-auto px-4 py-6 space-y-6">
         <StatusBar stats={stats} activeFilter={filter} onFilterChange={setFilter} />
 
+        {assignMode && (
+          <div className="flex flex-wrap items-center gap-2 rounded-xl bg-primary/10 border border-primary/30 p-3 shadow-sm">
+            <UserPlus className="h-4 w-4 text-primary" />
+            <span className="text-sm font-semibold text-foreground">
+              Assign Mode: tap rooms to add/remove from your list ({myRooms.length} assigned)
+            </span>
+            <Button variant="ghost" size="sm" onClick={() => setAssignMode(false)} className="ml-auto h-7">
+              Done
+            </Button>
+          </div>
+        )}
+
         {selectionMode && (
           <BulkActionBar
             selectedCount={selectedIds.size}
@@ -130,14 +169,51 @@ const Index = () => {
           />
         )}
 
+        {/* My Rooms Today section */}
+        {myRooms.length > 0 && (
+          <section className="rounded-xl border-2 border-primary/40 bg-primary/5 p-4 space-y-3">
+            <div className="flex items-center justify-between gap-2">
+              <div className="flex items-center gap-2">
+                <UserPlus className="h-4 w-4 text-primary" />
+                <h2 className="text-sm font-semibold text-foreground uppercase tracking-wide">
+                  My Rooms Today
+                </h2>
+                <span className="rounded-full bg-primary px-2 py-0.5 text-xs font-bold text-primary-foreground">
+                  {myRooms.length}
+                </span>
+              </div>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={clearMyAssignments}
+                className="h-7 text-xs text-muted-foreground hover:text-destructive"
+              >
+                <X className="h-3.5 w-3.5 mr-1" /> Clear all
+              </Button>
+            </div>
+            <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-8 xl:grid-cols-10 gap-3">
+              {myRooms.map(room => (
+                <RoomCard
+                  key={`my-${room.id}`}
+                  room={room}
+                  onClick={setSelectedRoom}
+                  selectionMode={false}
+                  isSelected={false}
+                  onToggleSelect={toggleSelect}
+                />
+              ))}
+            </div>
+          </section>
+        )}
+
         <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-8 xl:grid-cols-10 gap-3">
           {filteredRooms.map(room => (
             <RoomCard
               key={room.id}
               room={room}
               onClick={setSelectedRoom}
-              selectionMode={selectionMode}
-              isSelected={selectedIds.has(room.id)}
+              selectionMode={selectionMode || assignMode}
+              isSelected={assignMode ? !!room.assignedToMe : selectedIds.has(room.id)}
               onToggleSelect={toggleSelect}
             />
           ))}
