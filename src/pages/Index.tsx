@@ -170,7 +170,7 @@ const Index = () => {
         )}
 
         {/* My Rooms Today section */}
-        {myRooms.length > 0 && (
+        {myRooms.length > 0 && filter !== 'assignedToMe' && (
           <section className="rounded-xl border-2 border-primary/40 bg-primary/5 p-4 space-y-3">
             <div className="flex items-center justify-between gap-2">
               <div className="flex items-center gap-2">
