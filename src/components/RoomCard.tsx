@@ -63,20 +63,20 @@ export function RoomCard({ room, onClick, selectionMode, isSelected, onToggleSel
         )}
       </div>
 
-      {/* Released — clean: medium tick mark, positioned lower so room number/status stay visible */}
+      {/* Released — clean: medium tick mark */}
       {release === 'clean' && (
-        <div className="absolute inset-x-0 bottom-1 flex items-center justify-center pointer-events-none">
-          <div className="bg-room-vacant rounded-full p-1 shadow-lg ring-2 ring-white/80">
-            <Check className="h-5 w-5 text-white" strokeWidth={4} />
+        <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+          <div className="bg-room-vacant rounded-full p-2 shadow-lg ring-2 ring-white/80">
+            <Check className="h-7 w-7 text-white" strokeWidth={4} />
           </div>
         </div>
       )}
 
       {/* Released — partial: tick with warning hint */}
       {release === 'partial' && (
-        <div className="absolute inset-x-0 bottom-1 flex items-center justify-center pointer-events-none">
-          <div className="bg-white/90 rounded-full p-1 shadow-lg">
-            <Check className="h-5 w-5 text-room-vacant" strokeWidth={4} />
+        <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+          <div className="bg-white/90 rounded-full p-2 shadow-lg">
+            <Check className="h-7 w-7 text-room-vacant" strokeWidth={4} />
           </div>
         </div>
       )}
