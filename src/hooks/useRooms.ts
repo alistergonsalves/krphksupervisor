@@ -81,7 +81,7 @@ export function useRooms() {
   const resetRooms = () => setRooms(generateDefaultRooms());
 
   const clearMyAssignments = () => {
-    setRooms(prev => prev.map(r => ({ ...r, assignedToMe: false })));
+    setRooms(prev => prev.map(r => ({ ...r, assignedToMe: false, releaseStatus: 'none' })));
   };
 
   const stats = {
