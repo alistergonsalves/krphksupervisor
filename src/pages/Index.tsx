@@ -7,7 +7,7 @@ import { SettingsModal } from '@/components/SettingsModal';
 import { useRooms } from '@/hooks/useRooms';
 import { useSettings } from '@/hooks/useSettings';
 import { BulkActionBar } from '@/components/BulkActionBar';
-import { Hotel, Calendar, Settings, CheckSquare, UserPlus, X } from 'lucide-react';
+import { Hotel, Calendar, Settings, CheckSquare, UserPlus, X, Check, RotateCcw } from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Button } from '@/components/ui/button';
 
@@ -191,17 +191,60 @@ const Index = () => {
                 <X className="h-3.5 w-3.5 mr-1" /> Clear all
               </Button>
             </div>
-            <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-8 xl:grid-cols-10 gap-3">
-              {myRooms.map(room => (
-                <RoomCard
-                  key={`my-${room.id}`}
-                  room={room}
-                  onClick={setSelectedRoom}
-                  selectionMode={false}
-                  isSelected={false}
-                  onToggleSelect={toggleSelect}
-                />
-              ))}
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3">
+              {myRooms.map(room => {
+                const release = room.releaseStatus ?? 'none';
+                const handleRelease = () => {
+                  const next = room.missingItems.length > 0 ? 'partial' : 'clean';
+                  updateRoom(room.id, { releaseStatus: next, lastInspected: new Date() });
+                };
+                const handleUndo = () => {
+                  updateRoom(room.id, { releaseStatus: 'none' });
+                };
+                return (
+                  <div key={`my-${room.id}`} className="flex flex-col gap-2 rounded-xl bg-card p-2 border border-border/50 shadow-sm">
+                    <RoomCard
+                      room={room}
+                      onClick={setSelectedRoom}
+                      selectionMode={false}
+                      isSelected={false}
+                      onToggleSelect={toggleSelect}
+                    />
+                    {release === 'none' ? (
+                      <Button
+                        variant="default"
+                        size="sm"
+                        onClick={handleRelease}
+                        className="h-8 text-xs w-full"
+                      >
+                        <Check className="h-3.5 w-3.5 mr-1" />
+                        Checked & Released
+                      </Button>
+                    ) : (
+                      <div className="flex flex-col gap-1">
+                        <div className={`flex items-center justify-center gap-1 rounded-md px-2 py-1 text-[11px] font-semibold ${
+                          release === 'clean'
+                            ? 'bg-room-vacant/15 text-room-vacant'
+                            : 'bg-gradient-to-r from-room-vacant/20 to-room-occupied/20 text-foreground'
+                        }`}>
+                          <Check className="h-3 w-3" />
+                          {release === 'clean'
+                            ? 'Released ✓'
+                            : `Released · ${room.missingItems.length} item(s) pending`}
+                        </div>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={handleUndo}
+                          className="h-6 text-[11px] text-muted-foreground hover:text-foreground"
+                        >
+                          <RotateCcw className="h-3 w-3 mr-1" /> Undo
+                        </Button>
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
             </div>
           </section>
         )}

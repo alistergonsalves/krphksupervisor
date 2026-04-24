@@ -1,5 +1,5 @@
 import { Room, STATUS_CONFIG } from '@/types/housekeeping';
-import { AlertTriangle, BellOff, Wrench, Ban, Sofa } from 'lucide-react';
+import { AlertTriangle, BellOff, Wrench, Ban, Sofa, Check } from 'lucide-react';
 
 interface RoomCardProps {
   room: Room;
@@ -7,11 +7,13 @@ interface RoomCardProps {
   selectionMode?: boolean;
   isSelected?: boolean;
   onToggleSelect?: (room: Room) => void;
+  showReleaseBadge?: boolean;
 }
 
-export function RoomCard({ room, onClick, selectionMode, isSelected, onToggleSelect }: RoomCardProps) {
+export function RoomCard({ room, onClick, selectionMode, isSelected, onToggleSelect, showReleaseBadge }: RoomCardProps) {
   const config = STATUS_CONFIG[room.status];
   const hasJobOrders = room.jobOrders.some(j => !j.completed);
+  const release = room.releaseStatus ?? 'none';
 
   const handleClick = () => {
     if (selectionMode && onToggleSelect) {
@@ -21,10 +23,16 @@ export function RoomCard({ room, onClick, selectionMode, isSelected, onToggleSel
     }
   };
 
+  // Apply release visual if released (only when showReleaseBadge true OR always reflect on the card)
+  const releaseOverlayClass =
+    release === 'partial'
+      ? 'bg-gradient-to-br from-room-vacant via-room-vacant to-room-occupied text-white'
+      : '';
+
   return (
     <button
       onClick={handleClick}
-      className={`relative flex flex-col items-center justify-center rounded-xl p-4 min-h-[100px] transition-all hover:scale-105 hover:shadow-lg ${config.className} shadow-sm ${isSelected ? 'ring-2 ring-primary ring-offset-2 ring-offset-background' : ''}`}
+      className={`relative flex flex-col items-center justify-center rounded-xl p-4 min-h-[100px] transition-all hover:scale-105 hover:shadow-lg shadow-sm ${releaseOverlayClass || config.className} ${isSelected ? 'ring-2 ring-primary ring-offset-2 ring-offset-background' : ''}`}
     >
       {/* Flags */}
       <div className="absolute top-1.5 right-1.5 flex gap-1">
@@ -54,6 +62,24 @@ export function RoomCard({ room, onClick, selectionMode, isSelected, onToggleSel
           </span>
         )}
       </div>
+
+      {/* Released — clean: medium tick mark */}
+      {release === 'clean' && (
+        <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+          <div className="bg-room-vacant rounded-full p-2 shadow-lg ring-2 ring-white/80">
+            <Check className="h-7 w-7 text-white" strokeWidth={4} />
+          </div>
+        </div>
+      )}
+
+      {/* Released — partial: tick with warning hint */}
+      {release === 'partial' && (
+        <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+          <div className="bg-white/90 rounded-full p-2 shadow-lg">
+            <Check className="h-7 w-7 text-room-vacant" strokeWidth={4} />
+          </div>
+        </div>
+      )}
 
       <span className="text-2xl font-bold leading-none">{room.number}</span>
       <span className="mt-1 text-xs font-medium opacity-80 uppercase tracking-wide">{config.label}</span>

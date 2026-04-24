@@ -38,6 +38,7 @@ function loadRooms(): Room[] {
         isServiceRefused: r.isServiceRefused ?? false,
         isSofaCumBedDone: r.isSofaCumBedDone ?? false,
         assignedToMe: clearAssignments ? false : (r.assignedToMe ?? false),
+        releaseStatus: clearAssignments ? 'none' : (r.releaseStatus ?? 'none'),
         lastInspected: r.lastInspected ? new Date(r.lastInspected) : undefined,
         jobOrders: r.jobOrders.map(j => ({ ...j, createdAt: new Date(j.createdAt) })),
       }));
@@ -80,7 +81,7 @@ export function useRooms() {
   const resetRooms = () => setRooms(generateDefaultRooms());
 
   const clearMyAssignments = () => {
-    setRooms(prev => prev.map(r => ({ ...r, assignedToMe: false })));
+    setRooms(prev => prev.map(r => ({ ...r, assignedToMe: false, releaseStatus: 'none' })));
   };
 
   const stats = {
