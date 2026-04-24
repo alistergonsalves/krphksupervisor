@@ -23,6 +23,7 @@ export interface Room {
   isServiceRefused: boolean;
   isSofaCumBedDone: boolean;
   assignedToMe?: boolean;
+  releaseStatus?: 'none' | 'clean' | 'partial';
   missingItems: MissingItem[];
   jobOrders: JobOrder[];
   lastInspected?: Date;
