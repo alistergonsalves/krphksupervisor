@@ -7,7 +7,7 @@ import { SettingsModal } from '@/components/SettingsModal';
 import { useRooms } from '@/hooks/useRooms';
 import { useSettings } from '@/hooks/useSettings';
 import { BulkActionBar } from '@/components/BulkActionBar';
-import { Hotel, Calendar, Settings, CheckSquare, UserPlus, X } from 'lucide-react';
+import { Hotel, Calendar, Settings, CheckSquare, UserPlus, X, Check, RotateCcw } from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Button } from '@/components/ui/button';
 
