@@ -10,6 +10,40 @@ import { BulkActionBar } from '@/components/BulkActionBar';
 import { Hotel, Calendar, Settings, CheckSquare, UserPlus, X, Check, RotateCcw } from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Button } from '@/components/ui/button';
+import confetti from 'canvas-confetti';
+
+const celebrate = () => {
+  const duration = 2500;
+  const end = Date.now() + duration;
+  const colors = ['#26ccff', '#a25afd', '#ff5e7e', '#88ff5a', '#fcff42', '#ffa62d', '#ff36ff'];
+
+  // Initial big burst
+  confetti({
+    particleCount: 120,
+    spread: 90,
+    startVelocity: 45,
+    origin: { y: 0.2 },
+    colors,
+    scalar: 1.1,
+  });
+
+  // Continuous gentle fall from the top
+  (function frame() {
+    confetti({
+      particleCount: 4,
+      angle: 90,
+      spread: 120,
+      startVelocity: 25,
+      gravity: 0.6,
+      ticks: 300,
+      origin: { x: Math.random(), y: -0.05 },
+      colors,
+      shapes: ['square', 'circle'],
+      scalar: 1,
+    });
+    if (Date.now() < end) requestAnimationFrame(frame);
+  })();
+};
 
 
 type Filter = RoomStatus | 'all' | 'priority' | 'dnd' | 'serviceRefused' | 'sofaCumBedDone' | 'assignedToMe';
