@@ -231,6 +231,7 @@ const Index = () => {
                 const handleRelease = () => {
                   const next = room.missingItems.length > 0 ? 'partial' : 'clean';
                   updateRoom(room.id, { releaseStatus: next, lastInspected: new Date() });
+                  celebrate();
                 };
                 const handleUndo = () => {
                   updateRoom(room.id, { releaseStatus: 'none' });
