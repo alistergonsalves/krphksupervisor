@@ -52,6 +52,6 @@ export const STATUS_CONFIG: Record<RoomStatus, { label: string; className: strin
   dirty: { label: 'Dirty', className: 'room-status-dirty' },
   departure: { label: 'Departure', className: 'room-status-departure' },
   blocked: { label: 'Blocked', className: 'room-status-blocked' },
-  assigned: { label: 'Assigned', className: 'room-status-assigned' },
+  assigned: { label: 'Staff', className: 'room-status-assigned' },
   shifted: { label: 'Shifted', className: 'room-status-shifted' },
 };
