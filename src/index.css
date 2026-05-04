@@ -42,6 +42,8 @@
     --room-dirty: 45 93% 47%;
     --room-departure: 217 91% 55%;
     --room-blocked: 271 60% 50%;
+    --room-assigned: 0 0% 8%;
+    --room-shifted: 0 0% 65%;
     --room-priority: 25 95% 53%;
     --room-dnd: 0 0% 35%;
     --room-serviceRefused: 340 65% 47%;
@@ -98,5 +100,13 @@
   .room-status-blocked {
     background-color: hsl(var(--room-blocked));
     color: white;
+  }
+  .room-status-assigned {
+    background-color: hsl(var(--room-assigned));
+    color: white;
+  }
+  .room-status-shifted {
+    background-color: hsl(var(--room-shifted));
+    color: hsl(220 25% 12%);
   }
 }
