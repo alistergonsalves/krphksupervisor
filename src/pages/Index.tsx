@@ -309,6 +309,8 @@ const Index = () => {
           <div className="flex items-center gap-1.5"><span className="w-3 h-3 rounded-sm bg-room-dirty" /> Dirty</div>
           <div className="flex items-center gap-1.5"><span className="w-3 h-3 rounded-sm bg-room-departure" /> Departure</div>
           <div className="flex items-center gap-1.5"><span className="w-3 h-3 rounded-sm bg-room-blocked" /> Blocked</div>
+          <div className="flex items-center gap-1.5"><span className="w-3 h-3 rounded-sm bg-room-assigned" /> Assigned to Staff</div>
+          <div className="flex items-center gap-1.5"><span className="w-3 h-3 rounded-sm bg-room-shifted" /> Shifted</div>
         </div>
       </main>
 

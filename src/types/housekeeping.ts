@@ -1,4 +1,4 @@
-export type RoomStatus = 'vacant' | 'occupied' | 'dirty' | 'departure' | 'blocked';
+export type RoomStatus = 'vacant' | 'occupied' | 'dirty' | 'departure' | 'blocked' | 'assigned' | 'shifted';
 
 export interface MissingItem {
   name: string;
@@ -52,4 +52,6 @@ export const STATUS_CONFIG: Record<RoomStatus, { label: string; className: strin
   dirty: { label: 'Dirty', className: 'room-status-dirty' },
   departure: { label: 'Departure', className: 'room-status-departure' },
   blocked: { label: 'Blocked', className: 'room-status-blocked' },
+  assigned: { label: 'Assigned', className: 'room-status-assigned' },
+  shifted: { label: 'Shifted', className: 'room-status-shifted' },
 };

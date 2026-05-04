@@ -61,6 +61,8 @@ export default {
           dnd: "hsl(var(--room-dnd))",
           serviceRefused: "hsl(var(--room-serviceRefused))",
           sofaCumBed: "hsl(var(--room-sofaCumBed))",
+          assigned: "hsl(var(--room-assigned))",
+          shifted: "hsl(var(--room-shifted))",
         },
         sidebar: {
           DEFAULT: "hsl(var(--sidebar-background))",

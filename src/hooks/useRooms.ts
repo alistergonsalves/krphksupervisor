@@ -90,6 +90,8 @@ export function useRooms() {
     dirty: rooms.filter(r => r.status === 'dirty').length,
     departure: rooms.filter(r => r.status === 'departure').length,
     blocked: rooms.filter(r => r.status === 'blocked').length,
+    assigned: rooms.filter(r => r.status === 'assigned').length,
+    shifted: rooms.filter(r => r.status === 'shifted').length,
     priority: rooms.filter(r => r.isPriority).length,
     dnd: rooms.filter(r => r.isDND).length,
     serviceRefused: rooms.filter(r => r.isServiceRefused).length,
